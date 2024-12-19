@@ -3,14 +3,8 @@
     <h2>Login</h2>
     <form @submit.prevent="handleSubmit">
       <div>
-        <label for="username">Username</label>
-        <input
-          type="text"
-          id="username"
-          v-model="username"
-          required
-          placeholder="Enter your username"
-        />
+        <label for="email">Email</label>
+        <input type="email" id="email" v-model="email" required placeholder="Enter your email" />
       </div>
       <div>
         <label for="password">Password</label>
@@ -41,7 +35,7 @@ export default {
   name: 'LoginComponent',
   setup() {
     const router = useRouter()
-    const username = ref('')
+    const email = ref('')
     const password = ref('')
     const error = ref(null)
     const loading = ref(false)
@@ -51,7 +45,7 @@ export default {
       loading.value = true
 
       try {
-        const response = await fakeLoginApi(username.value, password.value)
+        const response = await fakeLoginApi(email.value, password.value)
         console.log('Login successful:', response)
         router.push('/dashboard')
       } catch (err) {
@@ -61,20 +55,38 @@ export default {
       }
     }
 
-    const fakeLoginApi = (username, password) => {
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          if (username === 'user' && password === 'password') {
-            resolve({ message: 'Login successful!' })
-          } else {
-            reject(new Error('Invalid username or password'))
-          }
-        }, 2000)
-      })
+    const fakeLoginApi = async (email, password) => {
+      const url = 'http://127.0.0.1:8000/api/login'
+
+      const body = JSON.stringify({ email, password })
+
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: body,
+        })
+        console.log(response)
+
+        if (!response.ok) {
+          throw new Error('Failed to login. Please try again.')
+        }
+
+        const result = await response.json()
+        localStorage.setItem('user_id', result.user.id)
+        localStorage.setItem('token', result.access_token)
+        console.log(result)
+
+        return result
+      } catch (error) {
+        throw new Error(error.message || 'An error occurred.')
+      }
     }
 
     return {
-      username,
+      email,
       password,
       error,
       loading,

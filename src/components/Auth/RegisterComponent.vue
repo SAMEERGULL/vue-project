@@ -27,11 +27,11 @@
         />
       </div>
       <div>
-        <label for="confirmPassword">Confirm Password</label>
+        <label for="password_confirmation">Confirm Password</label>
         <input
           type="password"
-          id="confirmPassword"
-          v-model="confirmPassword"
+          id="password_confirmation"
+          v-model="password_confirmation"
           required
           placeholder="Confirm your password"
         />
@@ -56,11 +56,11 @@ export default {
     const username = ref('')
     const email = ref('')
     const password = ref('')
-    const confirmPassword = ref('')
+    const password_confirmation = ref('')
     const error = ref(null)
     const loading = ref(false)
 
-    const passwordMatch = computed(() => password.value === confirmPassword.value)
+    const passwordMatch = computed(() => password.value === password_confirmation.value)
 
     const handleRegister = async () => {
       error.value = null
@@ -73,7 +73,7 @@ export default {
       }
 
       try {
-        const response = await registerApi(username.value, email.value, password.value)
+        const response = await registerApi(username.value, email.value, password.value, password_confirmation.value)
         console.log('Registration successful:', response)
         router.push('/') // Redirect to login page or another route
       } catch (err) {
@@ -83,12 +83,12 @@ export default {
       }
     }
 
-    const registerApi = async (username, email, password) => {
+    const registerApi = async (username, email, password, password_confirmation) => {
       // const url = `${import.meta.env.VUE_APP_BASE_URL}register`
       const url = 'http://127.0.0.1:8000/api/register'
       console.log(url)
 
-      const body = JSON.stringify({ name: username, email, password })
+      const body = JSON.stringify({ name: username, email, password, password_confirmation })
 
       try {
         const response = await fetch(url, {
@@ -117,7 +117,7 @@ export default {
       username,
       email,
       password,
-      confirmPassword,
+      password_confirmation,
       error,
       loading,
       passwordMatch,

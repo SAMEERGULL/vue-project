@@ -1,6 +1,9 @@
 <template>
     <div>
-        <h1>Dashboard</h1>
+        <div class="button-container">
+            <h1>Dashboard</h1>
+            <button @click="handleLogout">Log Out</button>
+        </div>
         <h3>Product Crud</h3>
     </div>
     <div>
@@ -10,4 +13,43 @@
 
 <script setup>
 import IndexComponent from './Product/IndexComponent.vue';
+import { useRouter } from 'vue-router';
+const router = useRouter();
+ const handleLogout = async () => {
+    const url = 'http://127.0.0.1:8000/api/logout'
+    const token = localStorage.getItem('token')
+    try{
+        const response = await fetch(url,{
+            method: "POST",
+            headers: {
+                authentication: token
+            },
+        })
+        if (!response.ok) {
+            console.log(response.message);
+        }
+        if (response.ok) {
+            router.push('/');
+        }
+    }catch (error) {
+        console.log('Error Occured', error);
+    }
+ }
 </script>
+
+<style>
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+
+  button {
+    padding: 0 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 20%;
+    cursor: pointer;
+  }  
+</style>
