@@ -22,13 +22,16 @@ const router = useRouter();
         const response = await fetch(url,{
             method: "POST",
             headers: {
-                authentication: token
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
             },
+            body: JSON.stringify({token})
         })
         if (!response.ok) {
-            console.log(response.message);
+            alert(response.message);
         }
         if (response.ok) {
+            localStorage.removeItem('token')
             router.push('/');
         }
     }catch (error) {

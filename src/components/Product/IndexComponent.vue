@@ -32,7 +32,7 @@
             <td>{{ product.sku }}</td>
             <td>{{ product.price }}</td>
             <td>
-              <img :src="product.image" alt="Product Image" class="product-image" />
+              <img :src={image} alt="Product Image" class="product-image" />
             </td>
             <td>
               <button @click="editProduct(product)">Edit</button>
@@ -50,32 +50,43 @@
   </template>
   
   <script setup>
-  import { ref, onMounted } from 'vue';
+  import { ref, onMounted, watch } from 'vue';
   import CreateComponent from './CreateComponent.vue';
   import EditComponent from './EditComponent.vue';
   
   const products = ref([]);
   const isCreateProductVisible = ref(false);
   const isEditProductVisible = ref(false);
-  const selectedProduct = ref(null); // To store the selected product for editing
+  const selectedProduct = ref(null); 
   
-  onMounted(async () => {
-    const url = 'http://127.0.0.1:8000/api/products';
-  
+  const token = localStorage.getItem('token')
+  const fetchProducts = async () => {
+    const url = `http://127.0.0.1:8000/api/products`;
+    
     try {
       const response = await fetch(url, {
         method: 'GET',
         headers: {
-          'Content-Type': 'application/json',
-        },
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
       });
       const data = await response.json();
       products.value = data;
     } catch (error) {
       console.error('There was an error fetching the products:', error);
     }
-  });
+  }
   
+ 
+onMounted(fetchProducts);
+
+watch([isCreateProductVisible, isEditProductVisible], () => {
+  if (!isCreateProductVisible.value && !isEditProductVisible.value) {
+    fetchProducts();
+  }
+});
+
   const createProduct = () => {
     isCreateProductVisible.value = true;
   };
@@ -85,9 +96,24 @@
     isEditProductVisible.value = true; 
   };
   
+  const image = fetch(`http://127.0.0.1;8000/api/product.image`,{
+    headers:{
+      Authorization: `bearer ${token}`,
+      'Accept': 'application/json'
+    }
+  });
+  console.log(image);
+  
   const deleteProduct = async (id) => {
+    const token = localStorage.getItem('token')
     try {
-      await fetch(`http://127.0.0.1:8000/api/products/${id}`, { method: 'DELETE' });
+      await fetch(`http://127.0.0.1:8000/api/products/${id}`, { 
+       method: 'DELETE',
+       headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+       });
       products.value = products.value.filter(product => product.id !== id); 
     } catch (error) {
       console.error('Error deleting the product:', error);

@@ -16,7 +16,7 @@
       </div>
       <div>
         <label for="image">Image URL</label>
-        <input type="file" @change="handleImageUpload" id="image" />
+        <input type="file" @change="handleImageUpload"  id="image" />
       </div>
       <div class="button-container">
         <button type="submit">Update Product</button>
@@ -44,6 +44,8 @@ const handleImageUpload = (event) => {
   const file = event.target.files[0]
   if (file) {
     image.value = file
+  }else {
+    image.value = props.product.image
   }
 }
 
@@ -69,17 +71,19 @@ const submitEdit = async () => {
     sku: sku.value,
     price: price.value,
     image: image.value,
-    _method: 'PUT',
+    // _method: 'PUT',
   }
   console.log('updated Data', updatedProduct)
   console.log('product id', props.product.id)
+  const token = localStorage.getItem('token')
 
   try {
     const response = await fetch(`http://127.0.0.1:8000/api/products/${props.product.id}`, {
-      method: 'POST',
+      method: 'PUT',
       headers: {
-        'Content-Type': 'application/json',
-      },
+                Authorization: `Bearer ${token}`,
+                'Accept': 'application/json'
+            },
       body: JSON.stringify(updatedProduct),
     })
 
