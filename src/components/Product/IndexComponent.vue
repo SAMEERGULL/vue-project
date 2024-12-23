@@ -32,7 +32,7 @@
             <td>{{ product.sku }}</td>
             <td>{{ product.price }}</td>
             <td>
-              <img :src={image} alt="Product Image" class="product-image" />
+              <img :src="'http://127.0.0.1:8000/'+ `images/${product.image}`" alt="Product Image" class="product-image" />
             </td>
             <td>
               <button @click="editProduct(product)">Edit</button>
@@ -95,14 +95,6 @@ watch([isCreateProductVisible, isEditProductVisible], () => {
     selectedProduct.value = product; 
     isEditProductVisible.value = true; 
   };
-  
-  const image = fetch(`http://127.0.0.1;8000/api/product.image`,{
-    headers:{
-      Authorization: `bearer ${token}`,
-      'Accept': 'application/json'
-    }
-  });
-  console.log(image);
   
   const deleteProduct = async (id) => {
     const token = localStorage.getItem('token')

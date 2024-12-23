@@ -66,20 +66,35 @@ watch(
 console.log('product Data', props.product)
 
 const submitEdit = async () => {
-  const updatedProduct = {
-    name: name.value,
-    sku: sku.value,
-    price: price.value,
-    image: image.value,
-    // _method: 'PUT',
-  }
-  console.log('updated Data', updatedProduct)
-  console.log('product id', props.product.id)
+  // const updatedProduct = {
+  //   name: name.value,
+  //   sku: sku.value,
+  //   price: price.value,
+  //   image: null,
+  //   _method: 'PUT',
+  // }
+  const updatedProduct = new FormData();
+  updatedProduct.append('name',name.value);
+  updatedProduct.append('sku',sku.value);
+  updatedProduct.append('price',price.value);
+  updatedProduct.append('_method','PUT');
   const token = localStorage.getItem('token')
-
+  if (image.value instanceof File) {
+    updatedProduct.append('image', image.value)
+    // updatedProduct.image = image.value
+  } else if (image.value) {
+    updatedProduct.append('image',image.value)
+    // updatedProduct.image = image.value
+  }
+  console.log(updatedProduct);
+  console.log(updatedProduct.name);
+  console.log(updatedProduct.sku);
+  console.log(updatedProduct.price);
+  console.log(updatedProduct._method);
+  console.log(updatedProduct.image);
   try {
     const response = await fetch(`http://127.0.0.1:8000/api/products/${props.product.id}`, {
-      method: 'PUT',
+      method: 'POST',
       headers: {
                 Authorization: `Bearer ${token}`,
                 'Accept': 'application/json'
